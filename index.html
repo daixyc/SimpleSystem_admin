@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
+    <!-- Twitter meta-->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:site" content="@pratikborsadiya">
+    <meta property="twitter:creator" content="@pratikborsadiya">
+    <!-- Open Graph Meta-->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Vali Admin">
+    <meta property="og:title" content="Vali - Free Bootstrap 4 admin theme">
+    <meta property="og:description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
+    <title>大屏幕配置</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Main CSS-->
+    <!-- Font-icon css-->
+    <link href="../Web/css/form.css" rel="stylesheet" />
+    <link href="../Web/css/bootstrap.css" rel="stylesheet" />
+    <link href="../Web/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../Web/css/font-awesome.css" rel="stylesheet" />
+    <link href="../Web/css/main.css" rel="stylesheet" />
+</head>
+<body class="app sidebar-mini rtl">
+    <!-- Navbar-->
+    <header class="app-header">
+        <a class="app-header__logo" href="index.html">大屏配置管理</a>
+        <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar" aria-label="Hide Sidebar"></a>
+        <!-- Navbar Right Menu-->
+        <ul class="app-nav">
+
+            <!--Notification Menu-->
+            <!-- User Menu-->
+
+        </ul>
+    </header>
+    <!-- 左边菜单导航-->
+    <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+    <aside class="app-sidebar">
+        <div class="app-sidebar__user">
+            <!--<div>
+              <p class="app-sidebar__user-name">导航栏</p>
+              <p class="app-sidebar__user-designation">Frontend Developer</p>
+            </div>-->
+        </div>
+        <ul id="left_menu" class="app-menu">
+
+            <li style="display:none;"><a class="app-menu__item" href="#" _src="../Web/html/PageInfo.html"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label" style="font-size:20px;">页面汇总</span></a></li>
+            <li style="display:none;"><a class="app-menu__item" href="#" _src="../Web/html/AddTVPage.html"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label" style="font-size:20px;">增加大屏</span></a></li>
+            <li style="display:none;"><a class="app-menu__item" href="#" _src="../Web/html/TVConfig.html"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label" style="font-size:20px;">大屏配置</span></a></li>
+            <li><a class="app-menu__item active" href="#" _src="../Web/html/TaskConfig.html"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label" style="font-size:20px;">任务配置</span></a></li>
+            <li><a class="app-menu__item" href="#" _src="../Web/html/DownLoad.html"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label" style="font-size:20px;">数据下载</span></a></li>
+            <li style="display:none;"><a class="app-menu__item" href="#" _src="../Web/html/UpdateSqlRate.html"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label" style="font-size:20px;">SQL修改</span></a></li>
+            <li><a class="app-menu__item" href="#" _src="../Web/html/PCBDataConfig.html"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label" style="font-size:20px;">PCB数据</span></a></li>
+        </ul>
+    </aside>
+
+
+    <main class="app-content" style="padding:0; height:100%" id="Main">
+        <iframe id="iframe" src="../Web/html/TaskConfig.html" style="overflow:hidden;width:100%;height:100%"></iframe>
+    </main>
+
+    <!-- Essential javascripts for application to work-->
+    <script src="js/axios.min.js"></script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/plugins/bootstrap-notify.min.js"></script>
+
+    <script src="js/Main.js"></script>
+
+
+    <script>
+
+        //<!--根据IP地址区别显示-->
+        function GetQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return decodeURI(r[2]); return null;
+        }
+        var IPUrl = GetQueryString("admin");
+        if (IPUrl != null) {
+            $(".app-sidebar .app-menu li").eq(0).css("display", "block");
+            $(".app-sidebar .app-menu li").eq(1).css("display", "block");
+            $(".app-sidebar .app-menu li").eq(2).css("display", "block");
+            $(".app-sidebar .app-menu li").eq(5).css("display", "block");
+        }
+
+        window.onresize = function () {
+            SetIframeHight();
+        }
+        function SetIframeHight() {
+            $("#iframe").height(0);
+            $("#iframe").height($("#Main").height() - 9);
+        }
+        $(function () {
+            SetIframeHight();
+        })
+
+        $("#left_menu li").click(function (e) {
+            $("#left_menu li a").removeClass("active");
+            $($(this).find("a").eq(0).addClass("active"));
+            if ($(this).find("a").eq(0).attr("_src")) {
+                $("#iframe").attr("src", $(this).find("a").eq(0).attr("_src"));
+            }
+        });
+
+
+
+    </script>
+
+
+
+
+</body>
+</html>

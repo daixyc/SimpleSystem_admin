@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:site" content="@pratikborsadiya">
+    <meta property="twitter:creator" content="@pratikborsadiya">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Vali Admin">
+    <meta property="og:title" content="Vali - Free Bootstrap 4 admin theme">
+    <meta property="og:description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
+    <title>大屏页面信息</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSS-->
+    <link href="../css/main.css" rel="stylesheet" />
+    <!-- Font-icon css-->
+    <link href="../css/font-awesome.min.css" rel="stylesheet" />
+
+</head>
+<body style="background-color:#E5E5E5;">
+    <div class="col-md-12">
+        <!--标题-->
+        <div class="tile">
+            <div class="col-md-12">
+                <div class="row">
+                    <h4><i class="fa fa-dashboard"></i>页面详情</h4>
+                </div>
+                <ul class="app-breadcrumb breadcrumb">                
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">本页面不提供配置页面由开发人员事先写好</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!--菜单管理数据-->
+        <div class="row" style="margin-top:20px;" id="DivTable">
+            <div class="col-md-12">
+                <div class="tile">
+                    <div class="col-md-12">
+                        <!--内容-->
+                        <table class="table table-striped table-sm table-hover table-bordered" style="text-align:center">
+                            <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>名称</th>
+                                    <th>页面Tag</th>
+                                    <th>页面地址</th>
+                                    <th>备注</th>                                                                  
+                                </tr>
+                            </thead>
+                            <tbody id="TableBody">
+                                <tr v-for="item in PageData">
+                                    <td>{{ item.rowindex }}</td>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.tag }}</td>
+                                    <td>{{ item.url }}</td>
+                                    <td>{{ item.remark }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="../js/jquery-3.2.1.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+
+    <script src="../js/vue.min.js"></script>
+
+
+
+    <script type="text/javascript">
+            var PageModel = new Vue({
+                el: "#TableBody",
+                data: {
+                    PageData: []
+                },
+                mounted: function () {
+               
+                    this.LoadPage();
+                },
+                methods: {
+                    LoadPage: function () {
+                        var _self = this;
+                        $.ajax({
+                            type: "POST",
+                            cache: false,
+                            url: '../../ashx/PageHandler.ashx',
+                            data: { "action": "GetPageInfo" },
+                            dataType: "json",
+                            beforeSend: function () { },
+                            success: function (data) {
+                                data = _self.getData(data.data);
+                                _self.PageData = data;
+                            },
+                            error: function (XmlHttpRequest, textStatus, errorThrown) {
+                                alert(XmlHttpRequest.responseText);
+                            }
+                        });
+                    },
+                    //合并相同单元格
+                    getData:function(list) {
+                        //console.log(list[0]);
+                        var rowindex = 0;
+                        for (field in list[0]) {
+                            var k = 0;
+
+                            while (k < list.length) {
+                                list[k][field + 'span'] = 1;
+                                list[k][field + 'dis'] = false;
+                                for (var i = k + 1; i <= list.length - 1; i++) {
+                                    list[i - 1]["rowindex"] = i;
+                                    if (list[k][field] == list[i][field] && list[k][field] != '') {
+                                        list[k][field + 'span']++;
+                                        list[k][field + 'dis'] = false;
+                                        list[i][field + 'span'] = 1;
+                                        list[i][field + 'dis'] = true;
+                                    } else {
+                                        break;
+                                    }
+                                    if (i == (list.length - 1))
+                                        list[i]["rowindex"] = i + 1;
+                                }
+                                k = i;
+                            }
+                        }
+                        return list;
+                    }
+                }
+            });
+
+    </script>
+</body>
+</html>

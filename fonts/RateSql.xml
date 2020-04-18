@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RateSql>
+  <type>
+    <serial>0</serial>
+    <name>MeterERP_Pass</name>
+    <time>24</time>
+    <text>ALTER procedure [dbo].[MeterERP_Pass]
+
+--设备名
+@MeterName nvarchar(20)=null,
+--批次号
+@MeterCode nvarchar(20)=null ,
+--自检批次总数
+@MeterCheckCount float=null,
+--不合格数
+@MeterUnPassCount float=null,
+--一次通过率
+@MeterPassRate nvarchar(20)=null,
+--时间
+@MeterCheckDate datetime=null
+
+
+as 
+
+if not exists(select * from dbo.sysobjects  where name='MeterERP_PassRate')
+		create table MeterERP_PassRate(
+								MeterName varchar(255) null,
+								MeterCode varchar(255) null,
+								MeterCheckCount int null,
+								MeterUnPassCount int null,
+								MeterPassRate nvarchar(20) null,
+								MeterCheckDate datetime  null
+		);
+
+	declare @num int    --游标循环用
+	declare @codenum int
+	declare @Timenum int
+	declare @EveryType  nvarchar(20)  --用来依次选取设备类型名
+	declare @EveryCode nvarchar(20)  --用来依次获取批次号
+	declare @EveryTime datetime  --用来依次获取时间
+	declare @Hang int   --设备名输出参数
+	declare @CodeHang int --批次号输出参数
+	declare @DateHang int   --时间输出参数
+	declare @AllNum  float  --计算过检总数输出参数
+	declare @PassNum  float --计算通过率通过数量
+
+	declare 
+		@ComType nvarchar(20),
+		@ComCode nvarchar(20),
+		@ComCheckCount int,
+		@ComUnPassCount int
+
+
+	set @num=0
+	set @codenum=1
+	set @Timenum=1
+begin try
+	begin tran 
+		--获取设备名称循环
+		declare TypeTab CURSOR for    --声明游标  获取设备名
+		select distinct MeterType from [CSTDATA].[dbo].[MeterERP_CheckInformation] where MeterType&lt;&gt;''or MeterType&lt;&gt;null and (CheckDate&gt;dateadd(year, datediff(year, 0, getdate())-1, 0) and CheckDate&lt;=CONVERT(varchar(30),getdate(),21));
+		select @Hang=count(distinct MeterType) from [CSTDATA].[dbo].[MeterERP_CheckInformation] where MeterType&lt;&gt;''or MeterType&lt;&gt;null and (CheckDate&gt;dateadd(year, datediff(year, 0, getdate())-1, 0) and CheckDate&lt;=CONVERT(varchar(30),getdate(),21));
+		open TypeTab 
+		fetch next from TypeTab into @EveryType
+		while (@num&lt;=@Hang)
+			begin 
+				--获取批次号循环
+				declare CodeTab CURSOR for
+				select distinct left(right(MeterCode,8),4) MeterCode from [CSTDATA].[dbo].[MeterERP_CheckInformation] where MeterType=@EveryType and (CheckDate&gt;dateadd(year, datediff(year, 0, getdate())-1, 0) and CheckDate&lt;=CONVERT(varchar(30),getdate(),21));
+				select @CodeHang=count(distinct left(right(MeterCode,8),4)) from [CSTDATA].[dbo].[MeterERP_CheckInformation] where MeterType=@EveryType and (CheckDate&gt;dateadd(year, datediff(year, 0, getdate())-1, 0) and CheckDate&lt;=CONVERT(varchar(30),getdate(),21));
+				open CodeTab
+				fetch next from CodeTab into @EveryCode
+				while(@codenum&lt;=@CodeHang)
+					begin 
+						select @AllNum=count(*) from [CSTDATA].[dbo].[MeterERP_CheckInformation] where MeterType=@EveryType and left(right(MeterCode,8),4)=@EveryCode 
+						select @PassNum=count(*) from [CSTDATA].[dbo].[MeterERP_CheckInformation] where MeterType=@EveryType and left(right(MeterCode,8),4)=@EveryCode and CheckResult='True'
+						set @MeterName=@EveryType
+						set @MeterCode=@EveryCode
+						set @MeterCheckCount=@AllNum
+						set @MeterUnPassCount=@AllNum-@PassNum
+						set @MeterPassRate=convert(varchar, convert(numeric(18,2),@PassNum/@AllNum)*100)+'%'
+						if exists(select * from MeterERP_PassRate where MeterName=@MeterName and MeterCode=@MeterCode)
+							begin
+								select @ComCheckCount=MeterCheckCount,@ComUnPassCount=MeterUnPassCount from MeterERP_PassRate where @ComType=MeterName and @ComCode=MeterCode
+								if(@ComCheckCount=@MeterCheckCount and @ComUnPassCount=@MeterUnPassCount)
+									begin
+										break
+									end
+								else
+									begin
+										update MeterERP_PassRate set MeterCheckCount=@MeterCheckCount,MeterUnPassCount=@MeterUnPassCount where  MeterName=@MeterName and MeterCode=@MeterCode
+									end
+							end
+						else
+							begin
+								insert into MeterERP_PassRate(MeterName,MeterCode,MeterCheckCount,MeterUnPassCount,MeterPassRate) values(@MeterName,@MeterCode,@MeterCheckCount,@MeterUnPassCount,@MeterPassRate)
+							end
+						
+						
+					  fetch next from CodeTab into @EveryCode
+					  set @codenum=@codenum+1
+					end 
+					close CodeTab
+					deallocate CodeTab
+					set @codenum=1
+				
+				fetch next from TypeTab into @EveryType
+				set @num=@num+1
+				
+			end
+			close TypeTab
+			deallocate TypeTab
+
+	COMMIT TRAN  
+end try   
+begin catch   
+	ROLLBACK  
+end catch 
+</text>
+  </type>
+  <type>
+    <serial>1</serial>
+    <name>
+    </name>
+    <time>12</time>
+    <text>23542453245366666666666</text>
+  </type>
+  <type>
+    <serial>2</serial>
+    <name>
+    </name>
+    <time>16</time>
+    <text>机电一体化产品一次通过率存储过程88888888888888888999999</text>
+  </type>
+  <type>
+    <serial>3</serial>
+    <name>
+    </name>
+    <time>12</time>
+    <text>ALTER procedure  hahahahsihaohdoihaoafsdfsdfsafsafsadf</text>
+  </type>
+</RateSql>

@@ -1,0 +1,202 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:site" content="@pratikborsadiya">
+    <meta property="twitter:creator" content="@pratikborsadiya">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Vali Admin">
+    <meta property="og:title" content="Vali - Free Bootstrap 4 admin theme">
+    <meta property="og:description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+    <!-- CSS-->
+
+
+    <link href="../css/main.css" rel="stylesheet" />
+    <!-- Font-icon css-->
+    <link href="../css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../css/select2.css" rel="stylesheet" />
+    <link href="../css/bootstrapValidator.min.css" rel="stylesheet" />
+
+</head>
+<body style="background-color:#E5E5E5;">
+
+    <div class="col-md-12">
+
+        <div class="tile">
+            <div class="col-md-12">
+                <div class="row">
+                    <h4><i class="fa fa-dashboard"></i>XML更新</h4>
+                </div>
+                <ul class="app-breadcrumb breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">用于配置XML文件，其本质是计算产品自检一次通过率的存储过程</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 展示并修改配置的XML -->
+        <div class="row" style="margin-top:20px;" id="DivForm" v-show="IsDisPlay">
+            <div class="col-md-12">
+                
+                <div class="tile" style="padding:20px 40px 40px 40px;">
+                    
+                    <div class="col-md-12">
+                        <div class="row">
+                            <form class="col-md-12" id="Form" method="post" style="border-left: 2px solid red;">
+                                <input type="hidden" id="Id" value="id" />
+
+                                    <article class="article">   
+                                        <div class="Time"><p>定时调用时间：</p><input class="Htime" id="Htime"><p>小时</p></div>
+                                        <div class="sql_type" >
+                                            <ul  style="padding-left:0;">
+                                                <li v-for="value,index in types" v-bind:class="{active:index==typeindex}"><button class="btn btn_type " type="button" v-on:click="click_type(index)">{{value.type}}</button></li>
+                                            </ul>
+                                        </div>
+                                        <div class="code">
+                                            <textarea  v-for="value,index in xml" :id="index" v-bind:class="{active:index==xmlindex}">{{value.sql}}</textarea>
+                                        </div>
+                                    </article>
+
+                                <div class="form-group" style="margin-top:10px;padding-left:152px;">
+                                    <button class="btn btn-primary" type="button" v-on:click="Submit">确认</button>
+                                    <button class="btn" type="button" id="Cancel" v-on:click="Cancel">取消</button>
+                                    <button class="btn btn-primary" type="button" v-on:click="Submitt">测试</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+
+
+    <script src="../js/jquery-3.2.1.min.js"></script>
+    <script src="../js/popper.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/plugins/pace.min.js"></script>
+    <script src="../js/select2.full.min.js"></script>
+    <script src="../js/axios.min.js"></script>
+    <script src="../js/bootstrapValidator.min.js"></script>
+
+    <script src="../js/vue.min.js"></script>
+    <script src="../js/vuex.js"></script>
+    <script src="../js/vue-router.js"></script>
+    <script src="../js/plugins/bootstrap-notify.min.js"></script>
+    <script src="../js/Main.js"></script>
+    <script src="../js/laydate/laydate.js"></script>
+
+    <script>
+
+        //读取xml中的存储过程
+        if (window.XMLHttpRequest) {
+            xmlhttp = new XMLHttpRequest();
+        }
+        else {
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.open("GET", "../fonts/RateSql.xml", false);
+        xmlhttp.send();
+        xmlDoc = xmlhttp.responseXML;
+
+
+        //点击选择要更改的类别存储过程
+        var type = new Vue({
+            el: ".sql_type",
+            data:{
+                typeindex:0,
+                types: [
+                    { type: "表类产品" },
+                    { type: "泵类产品" },
+                    { type: "机电产品" },
+                    { type: "组件产品" }
+                ]
+            },
+            methods: {
+                click_type: function (index) {
+                    this.typeindex = index;
+                    sqlxml.xmlindex = index;
+                    document.getElementById("Htime").value =
+                         xmlDoc.getElementsByTagName("time")[index].childNodes[0].nodeValue;  //显示的定时时间
+                }
+            }
+        })
+        
+        //选择要显示的存储过程
+        var sqlxml = new Vue({ 
+            el: ".code",
+            data: {
+                xmlindex: 0,
+                xml: [
+                    { sql: xmlDoc.getElementsByTagName("text")[0].childNodes[0].nodeValue },
+                    { sql: xmlDoc.getElementsByTagName("text")[1].childNodes[0].nodeValue },
+                    { sql: xmlDoc.getElementsByTagName("text")[2].childNodes[0].nodeValue },
+                    { sql: xmlDoc.getElementsByTagName("text")[3].childNodes[0].nodeValue }
+                ]
+            },
+            methods: {
+                getid: function (index) {
+                    return xmlindex;
+                }
+            }
+        })
+        
+        var update = new Vue({
+            el: ".form-group",
+            methods: {
+                Submit: function () {
+                    var index = sqlxml.xmlindex;
+                    var hostaddress = window.location.host;
+                    var xmldata = {
+                        "yesorno":"no",
+                        changetext: document.getElementById(index).value,
+                        index: index,
+                        xmladdress: hostaddress,
+                        time: document.getElementById("Htime").value
+                    }
+                    $.ajax({
+                        type: "POST",
+                        cache: false,
+                        url:'../../ashx/UpDateSqlRate.ashx',
+                        data: xmldata,
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.type == 1) {
+                                window.location.href = "../../Web/html/UpdateSqlRate.html"
+                                window.top.PromptMessage("提示", data.msg, "success");
+                            }
+                            else window.top.PromptMessage("提示", data.msg, "info");
+                        },
+                        error:function (XmlHttpRequest,textStatus,errorThrown){
+                            alert(XmlHttpRequest.responseText);
+                    }
+                    })
+
+                },
+                Cancel: function () {
+                    window.location.href = "../../Web/html/UpdateSqlRate.html";
+                },
+                Submitt: function () {
+                    var index = sqlxml.xmlindex;
+                    xmlDoc.getElementsByTagName("text")[2].childNodes[0].nodeValue =
+                        document.getElementById(index).value;
+                    alert(document.getElementById(index).value);
+                }
+            }
+        });
+
+    </script>
+
+</body>
+</html>

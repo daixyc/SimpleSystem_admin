@@ -1,0 +1,403 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:site" content="@pratikborsadiya">
+    <meta property="twitter:creator" content="@pratikborsadiya">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Vali Admin">
+    <meta property="og:title" content="Vali - Free Bootstrap 4 admin theme">
+    <meta property="og:description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
+    <title>大屏页面信息</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+    <!-- CSS-->
+
+
+    <link href="../css/main.css" rel="stylesheet" />
+    <!-- Font-icon css-->
+    <link href="../css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../css/select2.css" rel="stylesheet" />
+    <link href="../css/bootstrapValidator.min.css" rel="stylesheet" />
+
+</head>
+<body style="background-color:#E5E5E5;">
+
+    <div class="col-md-12">
+        <!--标题-->
+        <div class="tile">
+            <div class="col-md-12">
+                <div class="row">
+                    <h4><i class="fa fa-dashboard"></i>  任务配置</h4>
+                </div>
+                <ul class="app-breadcrumb breadcrumb">
+                    <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+                    <li class="breadcrumb-item"><a href="#">任务的排序数字越大排序越前</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!--菜单管理数据-->
+        <div class="row" style="margin-top:20px;" id="DivTable" v-show="IsDisPlay">
+            <div class="col-md-12">
+                <div class="tile">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="btn-group" id="BtnGroup">
+                                <button class="btn btn-primary btn-sm" type="button" v-on:click="btnClick" id="Add">添加</button>
+                                <button class="btn btn-primary btn-sm" type="button" v-on:click="btnClick" id="Edit">修改</button>
+                                <button class="btn btn-primary btn-sm" type="button" v-on:click="btnClick" id="Delete">删除</button>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:20px;">
+                            <table class="table table-striped table-sm table-hover table-bordered">
+                                <thead style="background-color:#6c757d;color:#E5E5E5">
+                                    <tr>
+                                        <th style="width:80px">选择</th>
+                                        <th style="width:200px">标题</th>
+                                        <th>内容</th>
+                                        <th style="width:120px" >责任人</th>
+                                        <th style="width:80px">排序</th>
+                                        <th style="width:200px" >结束时间</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="TableBody">
+                                    <tr v-for="item in PageData">
+                                        <td valign="middle">
+                                            <span class="animated-checkbox">
+                                                <label style="margin:0;padding:0;">
+                                                    <input type="checkbox" v-bind:value="item.id" v-model="IsChecked" />
+                                                    <span class="label-text"></span>
+                                                </label>
+                                            </span>
+                                        </td>
+                                        <td valign="middle">{{ item.title }}</td>
+                                        <td valign="middle">{{ item.content }}</td>
+                                        <td valign="middle">{{ item.personname }}</td>
+                                        <td valign="middle">{{ item.sortindex }}</td>
+                                        <td valign="middle">{{ item.finishtime }}</td>
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--添加修改表单-->
+        <div class="row" style="margin-top:20px;display:none;" id="DivForm" v-show="IsDisPlay">
+            <div class="col-md-12">
+                <div class="tile">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <form class="col-md-12" id="Form" method="post">
+                                <input type="hidden" id="Id" value="id" />
+
+
+                                <div class="form-group">
+                                    <label>任务标题</label>
+                                    <input class="form-control" type="text" placeholder="任务标题" v-model="title" name="title">
+                                </div>
+                             
+                                <div class="form-group">
+                                    <label>任务内容</label>
+                                    <textarea  class="form-control" rows="3" placeholder="任务内容" v-model="content" name="content" >
+                                        </textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>责任人</label>
+                                    <input class="form-control" type="text" placeholder="责任人" v-model="personname" name="personname">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>排序</label>
+                                    <input class="form-control" maxlength="10"   type="text" placeholder="排序,数字越大排序越前" v-model="sortindex" name="sortindex">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>结束时间</label>
+                                    <input  type="text" class="form-control"  placeholder="请点击选择时间"   name="finishtime" id="finishtime" readonly="readonly">
+                                </div>
+
+                                <div class="form-group">
+                                    <button class="btn btn-primary" type="button" v-on:click="Submit">确认</button>
+                                    <button class="btn" type="button" id="Cancel" v-on:click="Cancel">取消</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <!--添加修改表单-->
+
+
+
+    <script src="../js/jquery-3.2.1.min.js"></script>
+    <script src="../js/popper.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/plugins/pace.min.js"></script>
+    <script src="../js/select2.full.min.js"></script>
+    <script src="../js/axios.min.js"></script>
+    <script src="../js/bootstrapValidator.min.js"></script>
+
+    <script src="../js/vue.min.js"></script>
+    <script src="../js/vuex.js"></script>
+    <script src="../js/vue-router.js"></script>
+    <script src="../js/plugins/bootstrap-notify.min.js"></script>
+    <script src="../js/Main.js"></script>
+    <script src="../js/laydate/laydate.js"></script>
+    <script type="text/javascript">
+
+        ///加载时间控件
+        function SetTime(v)
+        {
+            var options = {
+                elem: '#finishtime' //指定元素
+              , type: 'datetime'
+              , format:'yyyy/MM/dd HH:mm:ss'             
+              , done: function (value, date, endDate) {
+                  FormDiv.finishtime = value;
+              }
+            }
+            if (v)options.value = v;
+            laydate.render(options);
+        }
+        ///加载验证控件
+        function SetValidator()
+        {
+            $("#DivForm").bootstrapValidator({
+                live: 'enabled',//验证时机，enabled是内容有变化就验证（默认），disabled和submitted是提交再验证
+                excluded: [':disabled', ':hidden', ':not(:visible)'],//排除无需验证的控件，比如被禁用的或者被隐藏的             
+                feedbackIcons: {//根据验证结果显示的各种图标
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    title: {
+                        validators: {
+                            notEmpty: {//检测非空,radio也可用
+                                message: '标题不能为空'
+                            },
+                            stringLength: {
+                                min: 1,
+                                max: 18,
+                                message: '标题长度必须在1到18位之间'
+                            },
+                        }
+                    },
+                    personname: {
+                        validators: {
+                            notEmpty: {//检测非空,radio也可用
+                                message: '责任人不能为空'
+                            },
+                            stringLength: {
+                                min: 1,
+                                max: 18,
+                                message: '标题长度必须在1到10位之间'
+                            }
+                        }
+                    },
+                    content: {
+                        validators: {
+                            notEmpty: {//检测非空,radio也可用
+                                message: '内容不能为空'
+                            }
+                        }
+                    },
+                    sortindex: {
+                        validators: {
+                            regexp: {
+                                regexp: /^[0-9]+$/,
+                                message: '必须是数字'
+                            }
+                        }
+                    }
+
+                }
+            });
+        }
+             
+        var DivTable = new Vue({
+            el: "#DivTable",
+            data: {
+                PageData: []
+                , IsChecked: []
+                , IsDisPlay: true
+
+            },
+            created: function () {
+                this.LoadPage();
+            },
+            methods: {
+                LoadPage: function () {
+                    var _self = this;
+                    $.ajax({
+                        type: "POST",
+                        cache: false,
+                        url: '../../ashx/TaskHandler.ashx',
+                        data: { "action": "Query" },
+                        dataType: "json",
+                        success: function (data) {
+                            _self.PageData = data.data;
+                        },
+                        error: function (XmlHttpRequest, textStatus, errorThrown) {
+                            window.top.PromptMessage("错误", '请选择单条数据修改!', "danger");
+                        }
+                    });
+                },
+                btnClick: function (event) {
+                    if (event.currentTarget.id == "Add")  this.Add();
+                    else if (event.currentTarget.id == "Edit") this.Edit();
+                    else if (event.currentTarget.id == "Delete") this.Delete();
+                },
+                Add: function () {
+              
+                    FormDiv.id = 0;
+                    FormDiv.title = "";
+                    FormDiv.content = "";
+                    FormDiv.personname = "";
+                    FormDiv.sortindex = "";
+                    FormDiv.finishtime = "";
+                    FormDiv.IsDisPlay = true;
+                    this.IsDisPlay = false;
+                },
+                Edit: function () {
+                    if (this.IsChecked.length != 1) window.top.PromptMessage("提示", '请选择单条数据修改!', "info");
+                    else
+                    {
+                        var d = this.GetRowData();
+                        FormDiv.id = d.id;
+                        FormDiv.title = d.title;
+                        FormDiv.content = d.content;
+                        FormDiv.personname = d.personname;
+                        FormDiv.sortindex = d.sortindex;
+                        FormDiv.finishtime = d.finishtime;
+                        SetTime(d.finishtime);
+                        FormDiv.IsDisPlay = true;
+                        this.IsDisPlay = false;
+                    }
+                },
+                Delete: function () {
+                    if (this.IsChecked.length != 1) window.top.PromptMessage("提示", '请选择单条数据删除!', "info");
+                    else
+                    {
+                        var params = {
+                            "action": "Delete",
+                            "id":this.IsChecked[0]
+                        };
+                        $.ajax({
+                            type: "POST",
+                            cache: false,
+                            url: '../../ashx/TaskHandler.ashx',
+                            data: params,
+                            dataType: "json",
+                            success: function (data) {
+                                if (data.type == 1) {
+                                    window.location.href = "../../Web/html/TaskConfig.html"
+                                  window.top.PromptMessage("提示", data.msg, "success");
+                                }
+                                else window.top.PromptMessage("提示", data.msg, "info");
+
+                            },
+                            error: function (XmlHttpRequest, textStatus, errorThrown) {
+                                alert(XmlHttpRequest.responseText);
+                            }
+                        });
+                    }
+                },
+                GetRowData: function ()
+                {
+                    var result;
+                    id = this.IsChecked[0];
+                    this.PageData.forEach(function (v, i) {
+                        if (v.id == id) {
+                            result = v;
+                            return;
+                        }
+                    });
+                    return result;
+                }
+            }
+        });
+
+        var FormDiv = new Vue({
+            el: "#DivForm",
+            data: {
+                IsDisPlay: false,
+                id: 0,
+                title:"",
+                content: "",
+                personname: "",
+                sortindex: "",
+                finishtime: ""
+            },
+            created: function () {
+              //  this.LoadTime();
+            },
+            methods: {           
+                //提交
+                Submit: function () {
+                    $("#DivForm").bootstrapValidator('validate');//提交验证
+                    if (!$("#DivForm").data('bootstrapValidator').isValid()) {//获取验证结果，如果成功，执行下面代码
+                        return;
+                    }
+                    var params = {
+                        "action": this.id == 0 ? "Add" : "Edit",
+                        "ID": this.id,
+                        "Title": this.title,
+                        "Content": this.content,
+                        "PersonName": this.personname,
+                        "SortIndex": this.sortindex,
+                        "FinishTime": this.finishtime,
+                    }
+                    $.ajax({
+                        type: "POST",
+                        cache: false,
+                        url: '../../ashx/TaskHandler.ashx',
+                        data: params,
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.type == 1) {
+                                window.location.href = "../../Web/html/TaskConfig.html"
+                                window.top.PromptMessage("提示", data.msg, "success");
+                            }
+                            else window.top.PromptMessage("提示", data.msg, "info");
+
+                        },
+                        error: function (XmlHttpRequest, textStatus, errorThrown) {
+                            alert(XmlHttpRequest.responseText);
+                        }
+                    });
+                },
+                //取消
+                Cancel: function () {
+                    window.location.href = "../../Web/html/TaskConfig.html"
+                }
+            }
+        });
+
+        //无法在vue生成画布的时候加载，必须dom成型后续加载
+        $(function () {
+            SetTime();
+            SetValidator();
+        });
+    </script>
+</body>
+</html>
